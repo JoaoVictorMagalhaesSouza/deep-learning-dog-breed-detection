@@ -18,7 +18,7 @@ import os
 from tensorflow.keras.layers import MaxPooling2D
 DEFAULT_SIZE = 256
 
-
+#%%
 
 print("Lendo imagens de treino...")
 # Carregar dados de treino
@@ -56,12 +56,14 @@ with open('classes.json', 'w') as f:
 
 print(f"Quantidade de classes: {num_classes}")
 # Dividir os dados em conjuntos de treino e validação
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1, random_state=42)
 
 print(f"Quantidade de imagens de treino: {len(X_train)}")
-print(f"Quantidade de imagens de val: {len(X_val)}")
+print(f"Quantidade de imagens de val: {len(X_test)}")
 print(y_train.shape)
-
+#%%
 # Definir a arquitetura do modelo usando InceptionV3
 input_shape = (DEFAULT_SIZE, DEFAULT_SIZE, 3)
 base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=input_shape)
@@ -101,7 +103,7 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=10, mode='min')
 # Treinar o modelo
 history = model.fit(
     datagen.flow(X_train, y_train, batch_size=64),
-    epochs=50,
+    epochs=25,
     validation_data=(X_val, y_val),
     callbacks=[checkpoint, early_stopping]
 )
@@ -125,37 +127,8 @@ plt.show()
 loss, accuracy = model.evaluate(X_val, y_val)
 print(f"Acurácia: {accuracy:.2f}")
 
-# Descongelar algumas camadas do modelo base para fine-tuning
-for layer in base_model.layers[-30:]:
-    layer.trainable = True
-
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-
-# Treinar novamente o modelo com fine-tuning
-history_fine = model.fit(
-    datagen.flow(X_train, y_train, batch_size=64),
-    epochs=100,
-    validation_data=(X_val, y_val),
-    callbacks=[checkpoint, early_stopping]
-)
-
-# Plotar gráficos de acurácia após fine-tuning
-loss_fine = history_fine.history['accuracy']
-val_loss_fine = history_fine.history['val_accuracy']
-
-epochs_fine = range(1, len(loss_fine) + 1)
-
-plt.plot(epochs_fine, loss_fine, 'y', label='Treinamento')
-plt.plot(epochs_fine, val_loss_fine, 'r', label='Validação')
-
-plt.title("Treinamento versus Validação após Fine-Tuning")
-plt.xlabel("Épocas")
-plt.ylabel("Acurácia Global")
-plt.legend()
-plt.show()
-
-# Avaliar o modelo após fine-tuning
-loss, accuracy = model.evaluate(X_val, y_val)
-print(f"Acurácia após fine-tuning: {accuracy:.2f}")
-
+# %% Avaliar em teste
+model = load_model('best_model.h5')
+loss, accuracy = model.evaluate(X_test, y_test)
+print(f"Acurácia em teste: {accuracy:.2f}")
 # %%
