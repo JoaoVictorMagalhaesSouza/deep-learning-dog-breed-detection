@@ -24,6 +24,8 @@ class LoadImages():
     
     def load_images(self):
         all_images = os.listdir(self.folder_path)
+        #Shuffle images
+        np.random.shuffle(all_images)
         labels_dataset = pd.read_csv(self.labels_path + "labels.csv")
         total_images = int(len(all_images) * self.qtde_images)
         for i,image in enumerate(all_images):

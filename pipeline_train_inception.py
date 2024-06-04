@@ -26,7 +26,7 @@ teste = LoadImages(
     folder_path="data/train/",
     labels_path="data/",
     default_size=DEFAULT_SIZE,
-    qtde_images=0.6
+    qtde_images=0.65
 )
 
 # Carregar imagens e rótulos
@@ -48,6 +48,11 @@ labels = lb.fit_transform(labels)
 y = labels
 
 num_classes = y.shape[1]
+import json
+#Saving classes
+with open('classes.json', 'w') as f:
+    json.dump(lb.classes_.tolist(), f)
+    
 
 print(f"Quantidade de classes: {num_classes}")
 # Dividir os dados em conjuntos de treino e validação
@@ -76,7 +81,6 @@ model = Model(inputs=base_model.input, outputs=predictions)
 for layer in base_model.layers:
     layer.trainable = False
 
-early_stopping = EarlyStopping(monitor='val_loss', patience=20, mode='min')
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Configurar Data Augmentation
@@ -97,7 +101,7 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=10, mode='min')
 # Treinar o modelo
 history = model.fit(
     datagen.flow(X_train, y_train, batch_size=64),
-    epochs=150,
+    epochs=50,
     validation_data=(X_val, y_val),
     callbacks=[checkpoint, early_stopping]
 )

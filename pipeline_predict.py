@@ -25,14 +25,9 @@ images, labels = teste.load_images()
 # %%
 X = np.array(images) / 255.0
 
-# Codificar rótulos
-lb = LabelBinarizer()
-labels = lb.fit_transform(labels)
-y = labels
-
 # %% Load model
 
-model = tf.keras.models.load_model("history_models/best_model_072.h5")
+model = tf.keras.models.load_model("best_model.h5")
 
 # %%
 input_shape = (DEFAULT_SIZE, DEFAULT_SIZE, 3)
@@ -43,6 +38,15 @@ predictions = model.predict(X)
 
 #%%
 predictions = np.argmax(predictions, axis=1)
-#Check class names
-lb.classes_
-# %%
+
+# %% Load classes
+import json
+with open('classes.json', 'r') as f:
+    classes = json.load(f)
+
+#Print images with classes
+for i in range(len(images)):
+    plt.title(classes[predictions[i]])
+    plt.imshow(images[i])
+    plt.show()
+#%%

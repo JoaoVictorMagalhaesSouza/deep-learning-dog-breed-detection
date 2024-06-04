@@ -33,7 +33,7 @@ X = np.array(images) / 255.0
 lb = LabelBinarizer()
 labels = lb.fit_transform(labels)
 y = labels
-
+#%%
 num_classes = y.shape[1]
 
 # Dividir os dados em conjuntos de treino e validação
