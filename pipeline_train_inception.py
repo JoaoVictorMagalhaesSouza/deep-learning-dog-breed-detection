@@ -85,11 +85,11 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='ca
 
 # Configurar Data Augmentation
 datagen = ImageDataGenerator(
-    rotation_range=50,
-    width_shift_range=0.5,
-    height_shift_range=0.5,
-    shear_range=0.5,
-    zoom_range=0.5,
+    rotation_range=15,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    shear_range=0.1,
+    zoom_range=0.1,
     horizontal_flip=True,
     fill_mode='nearest'
 )
