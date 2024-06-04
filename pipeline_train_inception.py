@@ -26,7 +26,7 @@ teste = LoadImages(
     folder_path="data/train/",
     labels_path="data/",
     default_size=DEFAULT_SIZE,
-    qtde_images=0.5
+    qtde_images=0.6
 )
 
 # Carregar imagens e rótulos
@@ -76,6 +76,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 for layer in base_model.layers:
     layer.trainable = False
 
+early_stopping = EarlyStopping(monitor='val_loss', patience=20, mode='min')
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Configurar Data Augmentation

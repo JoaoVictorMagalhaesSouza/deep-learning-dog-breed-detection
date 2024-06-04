@@ -29,6 +29,7 @@ class LoadImages():
         for i,image in enumerate(all_images):
             if i <= total_images:
                 img = cv2.imread(self.folder_path + image)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Correção da conversão de cor
                 img = Image.fromarray(img, 'RGB')
                 img = img.resize((self.default_size, self.default_size))
                 self.images.append(np.array(img))
